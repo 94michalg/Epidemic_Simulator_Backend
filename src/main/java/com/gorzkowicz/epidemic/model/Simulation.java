@@ -51,12 +51,22 @@ public class Simulation {
 
     @OneToMany(
             mappedBy = "simulation",
-            cascade = CascadeType.ALL
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
     @JsonIgnore
     private List<DailyStats> dailyStatsList;
 
     public Simulation() {
+    }
+
+    public void removeDailyStats() {
+        if (dailyStatsList != null) {
+            for (DailyStats ds: dailyStatsList) {
+                ds.setSimulation(null);
+            }
+            dailyStatsList.clear();
+        }
     }
 
     public Simulation(String name, int population, int infected, double RValue, double mortality, int infectedTime, int mortalityTime, int simulationTime) {
@@ -72,14 +82,16 @@ public class Simulation {
 
     public void calculateDailyStats() {
 
-        dailyStatsList = new ArrayList<>();
+        if (dailyStatsList == null) {
+            dailyStatsList = new ArrayList<>();
+        }
 
         //setting first day
         double r = RValue / infectedTime;
         DailyStats dayOne = new DailyStats(1, this);
         int dayOneHealthy = population - infected;
 
-        dayOne.setDailyInfections(infected);
+        dayOne.setDailyInfections(0);
         dayOne.setPi(infected);
         dayOne.setPv(dayOneHealthy);
         dayOne.setPm(0);
@@ -140,11 +152,12 @@ public class Simulation {
 
             dailyStatsList.add(temp);
 
-            if (population == loopPm + loopPr || loopPi == 0) {
+            if (population - infected == loopPm + loopPr || loopPi == infected) {
                 break;
             }
 
         }
+
     }
 
 }

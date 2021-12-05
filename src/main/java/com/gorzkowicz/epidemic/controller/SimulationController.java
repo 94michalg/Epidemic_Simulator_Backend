@@ -1,5 +1,6 @@
 package com.gorzkowicz.epidemic.controller;
 
+import com.gorzkowicz.epidemic.model.DailyStats;
 import com.gorzkowicz.epidemic.model.Simulation;
 import com.gorzkowicz.epidemic.repository.SimulationRepository;
 import com.gorzkowicz.epidemic.response.ResponseHandler;
@@ -90,6 +91,7 @@ public class SimulationController {
             _simulation.setMortalityTime(simulation.getMortalityTime());
             _simulation.setInfectedTime(simulation.getInfectedTime());
             _simulation.setSimulationTime(simulation.getSimulationTime());
+            _simulation.removeDailyStats();
 
             _simulation.calculateDailyStats();
             simulationRepository.save(_simulation);
